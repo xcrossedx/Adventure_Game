@@ -8,8 +8,18 @@ namespace Onyx
 {
     class Program
     {
-        static void Main(string[] args)
+        public static bool hasSave = false;
+
+        static void Main()
         {
+            Initialize();
+        }
+
+        private static void Initialize()
+        {
+            Screen.Initialize();
+            SaveFile.Check();
+            Menu.Pause();
         }
     }
 }
