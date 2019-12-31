@@ -16,12 +16,14 @@ namespace Onyx
 
         public static void Save()
         {
-
+            Console.Write("Saved");
+            Console.ReadLine();
         }
 
         public static void load()
         {
-
+            Console.Write("Loaded");
+            Console.ReadLine();
         }
     }
 }

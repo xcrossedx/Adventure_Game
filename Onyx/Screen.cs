@@ -8,12 +8,18 @@ namespace Onyx
 {
     static class Screen
     {
+        private static bool gameVisible = false;
+
         //Current window size used to detect when the screen size changes so it can redraw the whole window
         private static (int width, int height) currentWindowSize = (0, 0);
+
+        private static List<((int col, int row), int width, int height)> regions = new List<((int col, int row), int width, int height)>();
 
         //Initializes important screen values
         public static void Initialize()
         {
+            Console.Clear();
+            Console.BackgroundColor = ConsoleColor.Black;
             Console.CursorVisible = false;
             currentWindowSize = (Console.WindowWidth, Console.WindowHeight);
         }
@@ -21,7 +27,14 @@ namespace Onyx
         //Draws everything including the outlines of each region
         public static void Draw()
         {
+            Initialize();
 
+            SetRegions();
+
+            for (int r = 0; r < 4; r++)
+            {
+                Draw(r, 0);
+            }
         }
 
         //Draws the content of the given region
@@ -91,12 +104,63 @@ namespace Onyx
 
                         if (br == 1)
                         {
-                            Console.SetCursorPosition(bOrigin.col + 2, bOrigin.row + 1);
+                            if (buttonRows[r][c].label == "Resume")
+                            {
+                                Console.SetCursorPosition(bOrigin.col + 2, bOrigin.row + 1);
+                            }
+                            else
+                            {
+                                Console.SetCursorPosition(bOrigin.col + 3, bOrigin.row + 1);
+                            }
+
                             Console.Write(buttonRows[r][c].label);
                         }
                     }
+
+                    Console.BackgroundColor = ConsoleColor.Black;
                 }
             }
+        }
+
+        public static bool CheckSize()
+        {
+            bool changed = false;
+
+            if ((Console.WindowWidth, Console.WindowHeight) != currentWindowSize)
+            {
+
+                changed = true;
+
+                Initialize();
+
+                if (gameVisible)
+                {
+                    Draw();
+                }
+            }
+
+            return changed;
+        }
+
+        private static void SetRegions()
+        {
+            regions.Clear();
+
+            ((int col, int row), int width, int height) region;
+
+            //Region 0 = main game window
+            region = (());
+            regions.Add(region);
+
+            //Region 1 = consumable items
+            region = (());
+            regions.Add(region);
+
+            //Region 2 = equipped items
+
+
+            //Region 3 = text input/output
+
         }
     }
 }

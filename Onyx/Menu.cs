@@ -17,32 +17,32 @@ namespace Onyx
             {
                 if (!Program.hasSave)
                 {
-                    buttons.Add((" Play", ConsoleColor.DarkGray));
-                    buttons.Add((" Exit", ConsoleColor.DarkGray));
+                    buttons.Add(("Play", ConsoleColor.DarkGray));
+                    buttons.Add(("Exit", ConsoleColor.DarkGray));
                 }
                 else
                 {
-                    buttons.Add((" New", ConsoleColor.DarkGray));
-                    buttons.Add((" Load", ConsoleColor.DarkGray));
-                    buttons.Add((" Exit", ConsoleColor.DarkGray));
+                    buttons.Add(("Play", ConsoleColor.DarkGray));
+                    buttons.Add(("Exit", ConsoleColor.DarkGray));
+                    buttons.Add(("Load", ConsoleColor.DarkGray));
                 }
             }
             else
             {
                 canEscape = true;
 
-                if (Program.hasSave)
+                if (!Program.hasSave)
                 {
                     buttons.Add(("Resume", ConsoleColor.DarkGray));
-                    buttons.Add((" Save", ConsoleColor.DarkGray));
-                    buttons.Add((" Exit", ConsoleColor.DarkGray));
+                    buttons.Add(("Exit", ConsoleColor.DarkGray));
+                    buttons.Add(("Save", ConsoleColor.DarkGray));
                 }
                 else
                 {
                     buttons.Add(("Resume", ConsoleColor.DarkGray));
-                    buttons.Add((" Save", ConsoleColor.DarkGray));
-                    buttons.Add((" Exit", ConsoleColor.DarkGray));
-                    buttons.Add((" Load", ConsoleColor.DarkGray));
+                    buttons.Add(("Save", ConsoleColor.DarkGray));
+                    buttons.Add(("Exit", ConsoleColor.DarkGray));
+                    buttons.Add(("Load", ConsoleColor.DarkGray));
                 }
             }
 
@@ -63,6 +63,14 @@ namespace Onyx
                 rows[selection.row][selection.col] = (rows[selection.row][selection.col].label, ConsoleColor.Red);
                 previousSelection = selection;
                 Screen.Draw(rows);
+
+                while (Console.KeyAvailable == false)
+                {
+                    if (Screen.CheckSize())
+                    {
+                        Screen.Draw(rows);
+                    }
+                }
 
                 ConsoleKey input = Console.ReadKey(true).Key;
 
@@ -124,6 +132,23 @@ namespace Onyx
                     selection = (0, 0);
                     selected = true;
                 }
+            }
+
+            if (rows[selection.row][selection.col].label == "Play")
+            {
+                Game.Initialize();
+            }
+            else if (rows[selection.row][selection.col].label == "Exit")
+            {
+                Environment.Exit(0);
+            }
+            else if (rows[selection.row][selection.col].label == "Save")
+            {
+                SaveFile.Save();
+            }
+            else if (rows[selection.row][selection.col].label == "Load")
+            {
+                SaveFile.load();
             }
 
             List<List<(string, ConsoleColor)>> makeRows(List<(string, ConsoleColor)> allButtons)

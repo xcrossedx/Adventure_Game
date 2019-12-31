@@ -10,8 +10,9 @@ namespace Onyx
     {
         public static bool playing = false;
 
-        public static void Navigate(int[] rows)
+        public static void Initialize()
         {
+            playing = true;
 
         }
     }
