@@ -8,23 +8,26 @@ namespace Onyx
 {
     static class Screen
     {
-        private static bool gameVisible = false;
-
         //Current window size used to detect when the screen size changes so it can redraw the whole window
         private static (int width, int height) currentWindowSize = (0, 0);
 
-        private static List<((int col, int row), int width, int height)> regions = new List<((int col, int row), int width, int height)>();
+        private static List<(int col, int row, int width, int height)> regions = new List<(int col, int row, int width, int height)>();
 
         //Initializes important screen values
         public static void Initialize()
         {
-            Console.Clear();
             Console.BackgroundColor = ConsoleColor.Black;
+            Console.Clear();
             Console.CursorVisible = false;
             currentWindowSize = (Console.WindowWidth, Console.WindowHeight);
+            try
+            {
+                Console.SetBufferSize(Console.WindowWidth, Console.WindowHeight);
+            }
+            catch { }
         }
 
-        //Draws everything including the outlines of each region
+        //Draws every region of the game
         public static void Draw()
         {
             Initialize();
@@ -33,13 +36,63 @@ namespace Onyx
 
             for (int r = 0; r < 4; r++)
             {
-                Draw(r, 0);
+                Draw(r, ConsoleColor.Blue);
             }
         }
 
-        //Draws the content of the given region
-        public static void Draw(int region, int variation)
+        //Draws the outline and calls for the content of a specified region
+        public static void Draw(int region, ConsoleColor highlight)
         {
+            try
+            {
+                (int col, int row, int width, int height) = regions[region];
+
+                for (int r = row; r < row + height; r++)
+                {
+                    for (int c = col; c < col + width; c++)
+                    {
+                        Console.BackgroundColor = highlight;
+                        Console.SetCursorPosition(c, r);
+
+                        if (r == row && c == col)
+                        {
+                            Console.Write(" ");
+                        }
+                        else if (r == row && c == col + width - 1)
+                        {
+                            Console.Write(" ");
+                        }
+                        else if (r == row + height - 1 && c == col)
+                        {
+                            Console.Write(" ");
+                        }
+                        else if (r == row + height - 1 && c == col + width - 1)
+                        {
+                            Console.Write(" ");
+                        }
+                        else if (r == row || r == row + height - 1)
+                        {
+                            Console.Write(" ");
+                        }
+                        else if (c == col || c == col + width - 1)
+                        {
+                            Console.Write(" ");
+                        }
+
+                        Console.BackgroundColor = ConsoleColor.Black;
+                    }
+                }
+
+                DrawContent(region);
+            }
+            catch { }
+        }
+
+        private static void DrawContent(int region)
+        {
+            (int col, int row, int width, int height) fullRegion = regions[region];
+            (int col, int row, int width, int height) contentRegion = (fullRegion.col + 1, fullRegion.row + 1, fullRegion.width - 2, fullRegion.height - 2);
+
 
         }
 
@@ -128,14 +181,15 @@ namespace Onyx
 
             if ((Console.WindowWidth, Console.WindowHeight) != currentWindowSize)
             {
-
                 changed = true;
 
-                Initialize();
-
-                if (gameVisible)
+                if (Game.playing)
                 {
                     Draw();
+                }
+                else
+                {
+                    Initialize();
                 }
             }
 
@@ -146,21 +200,55 @@ namespace Onyx
         {
             regions.Clear();
 
-            ((int col, int row), int width, int height) region;
+            (int col, int row, int width, int height) region;
 
             //Region 0 = main game window
-            region = (());
+            int width = 0;
+            int height = 0;
+            int hOffset = 0;
+            int vOffset = 0;
+
+            if (Console.WindowWidth - 24 <= (Console.WindowHeight - 12) * 2)
+            {
+                width = Console.WindowWidth - 22;
+                height = ((Console.WindowWidth - 24) / 2) + 2;
+                vOffset = ((Console.WindowHeight - 10) - (((Console.WindowWidth - 24) / 2) + 2)) / 2;
+            }
+            else
+            {
+                width = ((Console.WindowHeight - 12) * 2) + 2;
+                height = Console.WindowHeight - 10;
+                hOffset = ((Console.WindowWidth - 22) - (((Console.WindowHeight - 12) * 2) + 2)) / 2;
+            }
+
+            region = (11 + hOffset, 0 + vOffset, width, height);
             regions.Add(region);
 
             //Region 1 = consumable items
-            region = (());
+            height = ((Console.WindowHeight - 10) / 5) * 5;
+            vOffset = ((Console.WindowHeight - 10) % 5) / 2;
+
+            region = (1, 0 + vOffset, 10, height);
             regions.Add(region);
 
             //Region 2 = equipped items
+            if (Console.WindowHeight - 8 >= 26)
+            {
+                height = 26;
+            }
+            else
+            {
+                height = 6;
+            }
 
+            vOffset = ((Console.WindowHeight - 10) - height) / 2;
+
+            region = (Console.WindowWidth - 11, 0 + vOffset, 10, height);
+            regions.Add(region);
 
             //Region 3 = text input/output
-
+            region = (1, Console.WindowHeight - 10, Console.WindowWidth - 2, 10);
+            regions.Add(region);
         }
     }
 }

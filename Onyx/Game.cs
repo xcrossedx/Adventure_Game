@@ -14,6 +14,14 @@ namespace Onyx
         {
             playing = true;
 
+            Screen.Draw();
+
+            while (Console.KeyAvailable == false)
+            {
+                Screen.CheckSize();
+            }
+
+            Console.ReadLine();
         }
     }
 }

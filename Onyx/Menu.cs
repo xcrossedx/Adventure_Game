@@ -13,7 +13,7 @@ namespace Onyx
             bool canEscape = false;
             List<(string label, ConsoleColor highlight)> buttons = new List<(string label, ConsoleColor highlight)>();
 
-            if (Game.playing)
+            if (!Game.playing)
             {
                 if (!Program.hasSave)
                 {
