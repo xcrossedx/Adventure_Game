@@ -51,35 +51,46 @@ namespace Onyx
                 {
                     for (int c = col; c < col + width; c++)
                     {
-                        Console.BackgroundColor = highlight;
+                        Console.ForegroundColor = highlight;
                         Console.SetCursorPosition(c, r);
 
                         if (r == row && c == col)
                         {
-                            Console.Write(" ");
+                            Console.Write("╔");
                         }
                         else if (r == row && c == col + width - 1)
                         {
-                            Console.Write(" ");
+                            Console.Write("╗");
                         }
                         else if (r == row + height - 1 && c == col)
                         {
-                            Console.Write(" ");
+                            Console.Write("╚");
                         }
                         else if (r == row + height - 1 && c == col + width - 1)
                         {
-                            Console.Write(" ");
+                            Console.Write("╝");
                         }
-                        else if (r == row || r == row + height - 1)
+                        else if ((r == row || r == row + height - 1) || ((region == 1 || region == 2) && ((row + height - 1) - r) % 5 == 0 && (c != col && c != col + width - 1)))
                         {
-                            Console.Write(" ");
+                            Console.Write("═");
+                        }
+                        else if ((region == 1 || region == 2) && ((row + height - 1) - r) % 5 == 0 && (r != row && r != height + row - 1))
+                        {
+                            if (c == col)
+                            {
+                                Console.Write("╠");
+                            }
+                            else if (c == col + width - 1)
+                            {
+                                Console.Write("╣");
+                            }
                         }
                         else if (c == col || c == col + width - 1)
                         {
-                            Console.Write(" ");
+                            Console.Write("║");
                         }
 
-                        Console.BackgroundColor = ConsoleColor.Black;
+                        Console.ForegroundColor = ConsoleColor.White;
                     }
                 }
 
@@ -225,14 +236,14 @@ namespace Onyx
             regions.Add(region);
 
             //Region 1 = consumable items
-            height = ((Console.WindowHeight - 10) / 5) * 5;
-            vOffset = ((Console.WindowHeight - 10) % 5) / 2;
+            height = (((Console.WindowHeight - 11) / 5) * 5) + 1;
+            vOffset = ((Console.WindowHeight - 11) % 5) / 2;
 
             region = (1, 0 + vOffset, 10, height);
             regions.Add(region);
 
             //Region 2 = equipped items
-            if (Console.WindowHeight - 8 >= 26)
+            if (Console.WindowHeight - 10 >= 26)
             {
                 height = 26;
             }
