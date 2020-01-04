@@ -11,7 +11,7 @@ namespace Onyx
         //Current window size used to detect when the screen size changes so it can redraw the whole window
         private static (int width, int height) currentWindowSize = (0, 0);
 
-        private static List<(int col, int row, int width, int height)> regions = new List<(int col, int row, int width, int height)>();
+        public static List<(int col, int row, int width, int height)> regions = new List<(int col, int row, int width, int height)>();
 
         //Initializes important screen values
         public static void Initialize()
@@ -36,12 +36,12 @@ namespace Onyx
 
             for (int r = 0; r < 4; r++)
             {
-                Draw(r, ConsoleColor.Blue);
+                Draw(r);
             }
         }
 
         //Draws the outline and calls for the content of a specified region
-        public static void Draw(int region, ConsoleColor highlight)
+        public static void Draw(int region)
         {
             try
             {
@@ -51,7 +51,7 @@ namespace Onyx
                 {
                     for (int c = col; c < col + width; c++)
                     {
-                        Console.ForegroundColor = highlight;
+                        Console.ForegroundColor = ConsoleColor.Blue;
                         Console.SetCursorPosition(c, r);
 
                         if (r == row && c == col)
@@ -89,6 +89,11 @@ namespace Onyx
                         {
                             Console.Write("║");
                         }
+                        else if (region == 1 && c == col + 1 && (row + height - r) % 5 == 0)
+                        {
+                            Console.ForegroundColor = ConsoleColor.DarkGray;
+                            Console.Write($"{(r + 6 - row) / 5}");
+                        }
 
                         Console.ForegroundColor = ConsoleColor.White;
                     }
@@ -104,7 +109,26 @@ namespace Onyx
             (int col, int row, int width, int height) fullRegion = regions[region];
             (int col, int row, int width, int height) contentRegion = (fullRegion.col + 1, fullRegion.row + 1, fullRegion.width - 2, fullRegion.height - 2);
 
+            //Main window
+            if (region == 0)
+            {
 
+            }
+            //Consumables
+            else if (region == 1)
+            {
+
+            }
+            //Equipped items
+            else if (region == 2)
+            {
+
+            }
+            //Text input/output
+            else if (region == 3)
+            {
+
+            }
         }
 
         //Draw method specifically for drawing the pause menu
@@ -221,15 +245,17 @@ namespace Onyx
 
             if (Console.WindowWidth - 24 <= (Console.WindowHeight - 12) * 2)
             {
-                width = Console.WindowWidth - 22;
-                height = ((Console.WindowWidth - 24) / 2) + 2;
-                vOffset = ((Console.WindowHeight - 10) - (((Console.WindowWidth - 24) / 2) + 2)) / 2;
+                width = (Console.WindowWidth - 22) - ((Console.WindowWidth - 22) % 4);
+                height = ((width - 2) / 2) + 2;
+                vOffset = ((Console.WindowHeight - 10) - height) / 2;
+                hOffset = ((Console.WindowWidth - 26) % 4) / 2;
             }
             else
             {
-                width = ((Console.WindowHeight - 12) * 2) + 2;
-                height = Console.WindowHeight - 10;
-                hOffset = ((Console.WindowWidth - 22) - (((Console.WindowHeight - 12) * 2) + 2)) / 2;
+                height = (Console.WindowHeight - 10) - ((Console.WindowHeight - 10) % 2);
+                width = ((height - 2) * 2) + 2;
+                hOffset = ((Console.WindowWidth - 22) - width) / 2;
+                vOffset = ((Console.WindowHeight - 12) % 2) / 2;
             }
 
             region = (11 + hOffset, 0 + vOffset, width, height);
@@ -237,9 +263,10 @@ namespace Onyx
 
             //Region 1 = consumable items
             height = (((Console.WindowHeight - 11) / 5) * 5) + 1;
-            vOffset = ((Console.WindowHeight - 11) % 5) / 2;
+            if (height > 51) { height = 51; }
+            vOffset = ((Console.WindowHeight - 10) - height) / 2;
 
-            region = (1, 0 + vOffset, 10, height);
+            region = (1 + (hOffset / 2), 0 + vOffset, 10, height);
             regions.Add(region);
 
             //Region 2 = equipped items
@@ -254,11 +281,11 @@ namespace Onyx
 
             vOffset = ((Console.WindowHeight - 10) - height) / 2;
 
-            region = (Console.WindowWidth - 11, 0 + vOffset, 10, height);
+            region = ((Console.WindowWidth - 11) - (hOffset / 2), 0 + vOffset, 10, height);
             regions.Add(region);
 
             //Region 3 = text input/output
-            region = (1, Console.WindowHeight - 10, Console.WindowWidth - 2, 10);
+            region = (1 + (hOffset / 2), Console.WindowHeight - 10, (Console.WindowWidth - 2) - hOffset, 10);
             regions.Add(region);
         }
     }

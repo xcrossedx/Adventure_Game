@@ -179,5 +179,10 @@ namespace Onyx
                 return buttonRows;
             }
         }
+
+        public static void Inventory()
+        {
+
+        }
     }
 }

@@ -17,6 +17,7 @@ namespace Onyx
 
         private static void Initialize()
         {
+            Console.SetWindowSize(80, 36);
             Screen.Initialize();
             SaveFile.Check();
             Menu.Pause();
