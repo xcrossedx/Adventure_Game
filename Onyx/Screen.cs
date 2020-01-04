@@ -11,6 +11,10 @@ namespace Onyx
         //Current window size used to detect when the screen size changes so it can redraw the whole window
         private static (int width, int height) currentWindowSize = (0, 0);
 
+        //List of ConsoleColors
+        private static ConsoleColor[] colors = Enum.GetValues(typeof (ConsoleColor)) as ConsoleColor[];
+
+        //Origin co-ordinates and dimensions of each screen region
         public static List<(int col, int row, int width, int height)> regions = new List<(int col, int row, int width, int height)>();
 
         //Initializes important screen values
@@ -91,8 +95,15 @@ namespace Onyx
                         }
                         else if (region == 1 && c == col + 1 && (row + height - r) % 5 == 0)
                         {
+                            int hotkey = (r + 6 - row) / 5;
+
+                            if (hotkey == 10)
+                            {
+                                hotkey = 0;
+                            }
+
                             Console.ForegroundColor = ConsoleColor.DarkGray;
-                            Console.Write($"{(r + 6 - row) / 5}");
+                            Console.Write(hotkey);
                         }
 
                         Console.ForegroundColor = ConsoleColor.White;
@@ -104,6 +115,10 @@ namespace Onyx
             catch { }
         }
 
+        //Previous content for comparison
+        private static List<List<int>> oldGameView = new List<List<int>>();
+
+        //Draws content within the given region
         private static void DrawContent(int region)
         {
             (int col, int row, int width, int height) fullRegion = regions[region];
@@ -112,22 +127,55 @@ namespace Onyx
             //Main window
             if (region == 0)
             {
+                List<List<int>> gameView = GameView.Render(contentRegion.width, contentRegion.height);
 
+                if (gameView.Count() != oldGameView.Count())
+                {
+                    for (int r = 0; r < gameView.Count(); r++)
+                    {
+                        for (int c = 0; c < gameView[r].Count(); c++)
+                        {
+                            DrawPixel(r, c, gameView[r][c]);
+                        }
+                    }
+                }
+                else
+                {
+                    for (int r = 0; r < gameView.Count(); r++)
+                    {
+                        for (int c = 0; c < gameView[r].Count(); c++)
+                        {
+                            if (gameView[r][c] != oldGameView[r][c])
+                            {
+                                DrawPixel(r, c, gameView[r][c]);
+                            }
+                        }
+                    }
+                }
             }
             //Consumables
             else if (region == 1)
             {
-
+                InventoryView.RenderHotBar();
             }
             //Equipped items
             else if (region == 2)
             {
-
+                InventoryView.RenderEquipmentBar();
             }
             //Text input/output
             else if (region == 3)
             {
 
+            }
+
+            //Draws individual "pixels" for the game view region
+            void DrawPixel(int row, int col, int color)
+            {
+                Console.SetCursorPosition(contentRegion.col + (col * 2), contentRegion.row + row);
+                Console.BackgroundColor = colors[color];
+                Console.Write("  ");
+                Console.BackgroundColor = ConsoleColor.Black;
             }
         }
 
@@ -157,6 +205,7 @@ namespace Onyx
                 Console.Write("                          ");
             }
 
+            //Writing in the buttons
             Console.ForegroundColor = ConsoleColor.White;
 
             for (int r = 0; r < buttonRows.Count(); r++)
@@ -210,6 +259,7 @@ namespace Onyx
             }
         }
 
+        //Checks the window size and redraws the screen if it has changed
         public static bool CheckSize()
         {
             bool changed = false;
@@ -220,6 +270,7 @@ namespace Onyx
 
                 if (Game.playing)
                 {
+                    oldGameView = new List<List<int>>();
                     Draw();
                 }
                 else
@@ -231,6 +282,7 @@ namespace Onyx
             return changed;
         }
 
+        //Generates the origin points and dimensions of each screen region given the current window size
         private static void SetRegions()
         {
             regions.Clear();
@@ -240,22 +292,38 @@ namespace Onyx
             //Region 0 = main game window
             int width = 0;
             int height = 0;
+            int hExcess = 0;
+            int vExcess = 0;
             int hOffset = 0;
             int vOffset = 0;
 
             if (Console.WindowWidth - 24 <= (Console.WindowHeight - 12) * 2)
             {
                 width = (Console.WindowWidth - 22) - ((Console.WindowWidth - 22) % 4);
+
+                if (width > 102)
+                {
+                    hExcess = 102 - width;
+                    width = 102;
+                }
+
                 height = ((width - 2) / 2) + 2;
+                hOffset = (((Console.WindowWidth - 26) % 4) + hExcess) / 2;
                 vOffset = ((Console.WindowHeight - 10) - height) / 2;
-                hOffset = ((Console.WindowWidth - 26) % 4) / 2;
             }
             else
             {
                 height = (Console.WindowHeight - 10) - ((Console.WindowHeight - 10) % 2);
+
+                if (height > 52)
+                {
+                    vExcess = 52 - height;
+                    height = 52;
+                }
+
                 width = ((height - 2) * 2) + 2;
+                vOffset = (((Console.WindowHeight - 12) + vExcess) % 2) / 2;
                 hOffset = ((Console.WindowWidth - 22) - width) / 2;
-                vOffset = ((Console.WindowHeight - 12) % 2) / 2;
             }
 
             region = (11 + hOffset, 0 + vOffset, width, height);

@@ -8,5 +8,6 @@ namespace Onyx
 {
     class Inventory
     {
+
     }
 }

@@ -138,6 +138,10 @@ namespace Onyx
             {
                 Game.Initialize();
             }
+            else if (rows[selection.row][selection.col].label == "Resume")
+            {
+                Screen.Draw();
+            }
             else if (rows[selection.row][selection.col].label == "Exit")
             {
                 Environment.Exit(0);

@@ -6,7 +6,24 @@ using System.Threading.Tasks;
 
 namespace Onyx
 {
-    class InventoryView
+    static class InventoryView
     {
+        public static List<string[]> RenderHotBar()
+        {
+            List<string[]> hotBarItems = new List<string[]>();
+
+            Player.GenerateHotBar();
+
+            return hotBarItems;
+        }
+
+        public static List<string[]> RenderEquipmentBar()
+        {
+            List<string[]> equipmentBarItems = new List<string[]>();
+
+            Player.GenerateEquipmentBar();
+
+            return equipmentBarItems;
+        }
     }
 }

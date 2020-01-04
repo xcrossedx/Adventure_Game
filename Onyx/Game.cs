@@ -11,12 +11,19 @@ namespace Onyx
         public static bool playing = false;
         public static bool interupted = false;
 
+        //Initialize important game information
         public static void Initialize()
         {
             playing = true;
 
             Screen.Draw();
 
+            Play();
+        }
+
+        //Main game method most roads will lead here
+        private static void Play()
+        {
             while (!interupted)
             {
                 while (Console.KeyAvailable == false)
@@ -24,14 +31,16 @@ namespace Onyx
                     Screen.CheckSize();
                 }
 
-                ProcessInput();
+                ConsoleKey input = Console.ReadKey(true).Key;
+
+                ProcessInput(input);
             }
         }
 
-        private static void ProcessInput()
+        //General input processing for gameplay
+        private static void ProcessInput(ConsoleKey input)
         {
-            ConsoleKey input = Console.ReadKey(true).Key;
-
+            //Routing inputs to there relative methods
             if (input == ConsoleKey.Escape)
             {
                 Menu.Pause();
@@ -56,7 +65,25 @@ namespace Onyx
             {
                 GameView.Move(3);
             }
-            else if (input == ConsoleKey.A || input == ConsoleKey.B || input == ConsoleKey.C || input == ConsoleKey.D || input == ConsoleKey.E || input == ConsoleKey.F || input == ConsoleKey.G || input == ConsoleKey.H || input == ConsoleKey.I || input == ConsoleKey.J || input == ConsoleKey.K || input == ConsoleKey.L || input == ConsoleKey.M || input == ConsoleKey.N || input == ConsoleKey.O || input == ConsoleKey.P || input == ConsoleKey.Q || input == ConsoleKey.R || input == ConsoleKey.S || input == ConsoleKey.T || input == ConsoleKey.U || input == ConsoleKey.V || input == ConsoleKey.W || input == ConsoleKey.X || input == ConsoleKey.Y || input == ConsoleKey.Z)
+            else if (input == ConsoleKey.D1 || input == ConsoleKey.D2 || input == ConsoleKey.D3 || input == ConsoleKey.D4 || input == ConsoleKey.D5 || input == ConsoleKey.D6 || input == ConsoleKey.D7 || input == ConsoleKey.D8 || input == ConsoleKey.D9 || input == ConsoleKey.D0)
+            {
+                int hotKey = int.Parse(input.ToString());
+
+                if (hotKey == 0)
+                {
+                    hotKey = 9;
+                }
+                else
+                {
+                    hotKey -= 1;
+                }
+
+                if (hotKey < Player.hotBar.Count())
+                {
+                    Player.UseItem(Player.hotBar[hotKey]);
+                }
+            }
+            else if (input == ConsoleKey.Spacebar || input == ConsoleKey.A || input == ConsoleKey.B || input == ConsoleKey.C || input == ConsoleKey.D || input == ConsoleKey.E || input == ConsoleKey.F || input == ConsoleKey.G || input == ConsoleKey.H || input == ConsoleKey.I || input == ConsoleKey.J || input == ConsoleKey.K || input == ConsoleKey.L || input == ConsoleKey.M || input == ConsoleKey.N || input == ConsoleKey.O || input == ConsoleKey.P || input == ConsoleKey.Q || input == ConsoleKey.R || input == ConsoleKey.S || input == ConsoleKey.T || input == ConsoleKey.U || input == ConsoleKey.V || input == ConsoleKey.W || input == ConsoleKey.X || input == ConsoleKey.Y || input == ConsoleKey.Z)
             {
                 TextView.input += input;
                 Screen.Draw(3);
