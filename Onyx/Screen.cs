@@ -14,6 +14,9 @@ namespace Onyx
         //List of ConsoleColors
         private static ConsoleColor[] colors = Enum.GetValues(typeof (ConsoleColor)) as ConsoleColor[];
 
+        //Defines the size of the game view pixels
+        public static bool bigPixels = false;
+
         //Origin co-ordinates and dimensions of each screen region
         public static List<(int col, int row, int width, int height)> regions = new List<(int col, int row, int width, int height)>();
 
@@ -127,29 +130,13 @@ namespace Onyx
             //Main window
             if (region == 0)
             {
-                List<List<int>> gameView = GameView.Render(contentRegion.width, contentRegion.height);
+                int[,] gameView = GameView.Render();
 
-                if (gameView.Count() != oldGameView.Count())
+                for (int r = 0; r < 24; r++)
                 {
-                    for (int r = 0; r < gameView.Count(); r++)
+                    for (int c = 0; c < 24; c++)
                     {
-                        for (int c = 0; c < gameView[r].Count(); c++)
-                        {
-                            DrawPixel(r, c, gameView[r][c]);
-                        }
-                    }
-                }
-                else
-                {
-                    for (int r = 0; r < gameView.Count(); r++)
-                    {
-                        for (int c = 0; c < gameView[r].Count(); c++)
-                        {
-                            if (gameView[r][c] != oldGameView[r][c])
-                            {
-                                DrawPixel(r, c, gameView[r][c]);
-                            }
-                        }
+                        DrawPixel(r, c, gameView[r, c]);
                     }
                 }
             }
@@ -172,9 +159,21 @@ namespace Onyx
             //Draws individual "pixels" for the game view region
             void DrawPixel(int row, int col, int color)
             {
-                Console.SetCursorPosition(contentRegion.col + (col * 2), contentRegion.row + row);
                 Console.BackgroundColor = colors[color];
-                Console.Write("  ");
+
+                if (!bigPixels)
+                {
+                    Console.SetCursorPosition(contentRegion.col + (col * 2), contentRegion.row + row);
+                    Console.Write("  ");
+                }
+                else
+                {
+                    Console.SetCursorPosition(contentRegion.col + (col * 4), contentRegion.row + (row * 2));
+                    Console.Write("    ");
+                    Console.SetCursorPosition(contentRegion.col + (col * 4), contentRegion.row + (row * 2) + 1);
+                    Console.Write("    ");
+                }
+
                 Console.BackgroundColor = ConsoleColor.Black;
             }
         }
@@ -285,6 +284,8 @@ namespace Onyx
         //Generates the origin points and dimensions of each screen region given the current window size
         private static void SetRegions()
         {
+            bool failed = false;
+
             regions.Clear();
 
             (int col, int row, int width, int height) region;
@@ -301,10 +302,29 @@ namespace Onyx
             {
                 width = (Console.WindowWidth - 22) - ((Console.WindowWidth - 22) % 4);
 
-                if (width > 102)
+                if (width >= 98)
                 {
-                    hExcess = 102 - width;
-                    width = 102;
+                    hExcess = width - 98;
+                    width = 98;
+                    bigPixels = true;
+                }
+                else if (width >= 50)
+                {
+                    hExcess = width - 50;
+                    width = 50;
+                    bigPixels = false;
+                }
+                else
+                {
+                    try
+                    {
+                        Console.WindowWidth += 49 - width;
+                        failed = true;
+                    }
+                    catch
+                    {
+                        Draw();
+                    }
                 }
 
                 height = ((width - 2) / 2) + 2;
@@ -315,14 +335,33 @@ namespace Onyx
             {
                 height = (Console.WindowHeight - 10) - ((Console.WindowHeight - 10) % 2);
 
-                if (height > 52)
+                if (height >= 50)
                 {
-                    vExcess = 52 - height;
-                    height = 52;
+                    vExcess = height - 50;
+                    height = 50;
+                    bigPixels = true;
+                }
+                else if (height >= 26)
+                {
+                    vExcess = height - 26;
+                    height = 26;
+                    bigPixels = false;
+                }
+                else
+                {
+                    try
+                    {
+                        Console.WindowHeight += 25 - height;
+                        failed = true;
+                    }
+                    catch
+                    {
+                        Draw();
+                    }
                 }
 
                 width = ((height - 2) * 2) + 2;
-                vOffset = (((Console.WindowHeight - 12) + vExcess) % 2) / 2;
+                vOffset = (((Console.WindowHeight - 12) % 2) + vExcess) / 2;
                 hOffset = ((Console.WindowWidth - 22) - width) / 2;
             }
 
@@ -355,6 +394,11 @@ namespace Onyx
             //Region 3 = text input/output
             region = (1 + (hOffset / 2), Console.WindowHeight - 10, (Console.WindowWidth - 2) - hOffset, 10);
             regions.Add(region);
+
+            if (failed)
+            {
+                CheckSize();
+            }
         }
     }
 }

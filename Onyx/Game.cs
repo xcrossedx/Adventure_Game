@@ -16,6 +16,7 @@ namespace Onyx
         {
             playing = true;
 
+            World.Initialize();
             Screen.Draw();
 
             Play();
@@ -37,6 +38,8 @@ namespace Onyx
             }
         }
 
+        private static DateTime lastInputTime = DateTime.MinValue;
+
         //General input processing for gameplay
         private static void ProcessInput(ConsoleKey input)
         {
@@ -49,21 +52,26 @@ namespace Onyx
             {
                 Menu.Inventory();
             }
-            else if (input == ConsoleKey.UpArrow)
+            else if ((input == ConsoleKey.UpArrow || input == ConsoleKey.RightArrow || input == ConsoleKey.DownArrow || input == ConsoleKey.LeftArrow) && DateTime.Now > lastInputTime.AddSeconds(.1))
             {
-                GameView.Move(0);
-            }
-            else if (input == ConsoleKey.RightArrow)
-            {
-                GameView.Move(1);
-            }
-            else if (input == ConsoleKey.DownArrow)
-            {
-                GameView.Move(2);
-            }
-            else if (input == ConsoleKey.LeftArrow)
-            {
-                GameView.Move(3);
+                if (input == ConsoleKey.UpArrow)
+                {
+                    GameView.Move(0);
+                }
+                else if (input == ConsoleKey.RightArrow)
+                {
+                    GameView.Move(1);
+                }
+                else if (input == ConsoleKey.DownArrow)
+                {
+                    GameView.Move(2);
+                }
+                else if (input == ConsoleKey.LeftArrow)
+                {
+                    GameView.Move(3);
+                }
+
+                lastInputTime = DateTime.Now;
             }
             else if (input == ConsoleKey.D1 || input == ConsoleKey.D2 || input == ConsoleKey.D3 || input == ConsoleKey.D4 || input == ConsoleKey.D5 || input == ConsoleKey.D6 || input == ConsoleKey.D7 || input == ConsoleKey.D8 || input == ConsoleKey.D9 || input == ConsoleKey.D0)
             {
