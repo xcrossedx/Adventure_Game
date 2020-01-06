@@ -11,7 +11,7 @@ namespace Onyx
         private static int[,] smallWorldMap =
         {
             { 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2 },
-            { 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 8, 2, 2, 2, 2, 2, 2, 2, 2 },
+            { 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 6, 2, 2, 2, 2, 2, 2, 2, 2 },
             { 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 6, 2, 2, 2, 2, 2, 2, 2, 2 },
             { 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 6, 2, 2, 2, 2, 2, 2, 2, 2 },
             { 2, 2, 8, 2, 2, 2, 2, 2, 2, 2, 2, 6, 2, 2, 2, 2, 2, 2, 2, 2 },
@@ -96,80 +96,90 @@ namespace Onyx
             int pRow = finePlayerLocation.row;
             int pCol = finePlayerLocation.col;
 
-            for (int r = 0; r < 13; r++)
+            for (int h = 0; h < 13; h++)
             {
-                for (int c = 0; c < 24; c++)
+                for (int w = 0; w < 24; w++)
                 {
+                    int heightOffset = 11 - h;
+                    int widthOffset = 12 - w;
+
                     if (d == 0)
                     {
-                        if (r < 7)
+                        if (h < 6)
                         {
-                            int row = pRow - (17 - (r * 2));
-
-                            if (row % 2 == 1)
-                            {
-                                row -= 1;
-                            }
-
-                            worldView[r, c] = largeWorldMap[row, pCol - (12 - c)];
-                        }
-                        else
-                        {
-                            worldView[r, c] = largeWorldMap[pRow - (11 - r), pCol - (12 - c)];
-                        }
-                    }
-                    else if (d == 1)
-                    {
-                        if (r < 7)
-                        {
-                            int col = pCol + (16 - (r * 2));
-
-                            if (col % 2 == 1)
-                            {
-                                col += 1;
-                            }
-
-                            worldView[r, c] = largeWorldMap[pRow - (12 - c), col];
-                        }
-                        else
-                        {
-                            worldView[r, c] = largeWorldMap[pRow - (12 - c), pCol + (10 - r)];
-                        }
-                    }
-                    else if (d == 2)
-                    {
-                        if (r < 7)
-                        {
-                            int row = pRow + (16 - (r * 2));
+                            int row = pRow - (17 - (h * 2));
 
                             if (row % 2 == 1)
                             {
                                 row += 1;
                             }
 
-                            worldView[r, c] = largeWorldMap[row, pCol + (11 - c)];
+                            worldView[h, w] = largeWorldMap[row, pCol - widthOffset];
                         }
                         else
                         {
-                            worldView[r, c] = largeWorldMap[pRow + (10 - r), pCol + (11 - c)];
+                            worldView[h, w] = largeWorldMap[pRow - heightOffset, pCol - widthOffset];
                         }
                     }
-                    else if (d == 3)
+                    else if (d == 1)
                     {
-                        if (r < 7)
-                        {
-                            int col = pCol - (17 - (r * 2));
+                        heightOffset -= 1;
 
-                            if (col % 2 == 1)
+                        if (h < 6)
+                        {
+                            int col = pCol + (16 - (h * 2));
+
+                            if (col % 2 == 0)
                             {
                                 col -= 1;
                             }
 
-                            worldView[r, c] = largeWorldMap[pRow + (11 - c), col];
+                            worldView[h, w] = largeWorldMap[pRow - widthOffset, col];
                         }
                         else
                         {
-                            worldView[r, c] = largeWorldMap[pRow + (11 - c), pCol - (11 - r)];
+                            worldView[h, w] = largeWorldMap[pRow - widthOffset, pCol + heightOffset];
+                        }
+                    }
+                    else if (d == 2)
+                    {
+                        heightOffset -= 1;
+                        widthOffset -= 1;
+
+                        if (h < 6)
+                        {
+                            int row = pRow + (16 - (h * 2));
+
+                            if (row % 2 == 0)
+                            {
+                                row -= 1;
+                            }
+
+                            worldView[h, w] = largeWorldMap[row, pCol + widthOffset];
+                        }
+                        else
+                        {
+                            worldView[h, w] = largeWorldMap[pRow + heightOffset, pCol + widthOffset];
+                        }
+                    }
+                    else if (d == 3)
+                    {
+                        widthOffset -= 1;
+
+                        if (h < 6)
+                        {
+                            int col = pCol - (17 - (h * 2));
+
+                            if (col % 2 == 1)
+                            {
+                                col += 1;
+                            }
+
+                            worldView[h, w] = largeWorldMap[pRow + widthOffset, col];
+                        }
+                        else
+                        {
+                            worldView[h, w] = largeWorldMap[pRow + widthOffset, pCol - heightOffset];
                         }
                     }
                 }
@@ -230,6 +240,8 @@ namespace Onyx
                 {
                     playerLocation.direction = (playerLocation.direction + 1) % 4;
                 }
+
+                finePlayerLocation.direction = playerLocation.direction;
             }
             if (direction == 3)
             {
@@ -253,6 +265,8 @@ namespace Onyx
                         playerLocation.direction = 3;
                     }
                 }
+
+                finePlayerLocation.direction = playerLocation.direction;
             }
         }
 

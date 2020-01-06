@@ -52,7 +52,7 @@ namespace Onyx
         public static int[,] Render()
         {
             int[,] render = new int[24, 24];
-
+            
             //If currently in the world map
             if (currentGameView == 0)
             {
@@ -100,16 +100,140 @@ namespace Onyx
                     }
                 }
 
-
+                AddAssetLayer(CreateAssetLayer());
             }
 
             return render;
 
-            void AddAssetLayer()
+            int[,] CreateAssetLayer()
             {
+                int row;
+                int col;
+                int dir;
+
+                int[,] assetLayer = new int[24, 24];
+
+                int[,] asset = { { 0 } };
+
+                for (int r = 0; r < 24; r++)
+                {
+                    for (int c = 0; c < 24; c++)
+                    {
+                        assetLayer[r, c] = -1;
+                    }
+                }
+
                 if (currentGameView == 0)
                 {
+                    row = World.finePlayerLocation.row;
+                    col = World.finePlayerLocation.col;
+                    dir = World.finePlayerLocation.direction;
 
+                    (int col, int row, int width, int height, bool covered) assetValues = (0, 0, 0, 0, false);
+
+                    bool visible = false;
+
+                    if (col == 115 && row < 60 && dir == 0)
+                    {
+                        visible = true;
+
+                        asset = Town.exterior.Clone() as int[,];
+
+                        assetValues.col = 0;
+                        assetValues.width = 24;
+                        assetValues.height = 13;
+
+                        if (row < 60 && row > 35)
+                        {
+                            assetValues.covered = true;
+                            assetValues.row = (11 - (assetValues.height - 1)) + ((row - 35) / 2);
+                        }
+                        else if (row <= 35)
+                        {
+                            assetValues.row = (16 - (assetValues.height - 1)) - ((row - 25) / 2);
+                        }
+                    }
+
+                    if (row == 75 && col > 132 && dir == 1)
+                    {
+                        visible = true;
+
+                        asset = Keep.exteriorBackground.Clone() as int[,];
+
+                        assetValues.col = 5;
+                        assetValues.width = 14;
+                        assetValues.height = 9;
+
+                        if (col > 132 && col < 155)
+                        {
+                            assetValues.covered = true;
+                            assetValues.row = (11 - (assetValues.height + 2)) + ((155 - col) / 2) + ((11 - ((155 - col) / 2)) / 2);
+                        }
+                        else if (col >= 155)
+                        {
+                            assetValues.row = (16 - (assetValues.height + 2)) - ((165 - col) / 2) + ((16 - ((165 - col) / 2)) / 2);
+                        }
+                    }
+
+                    if (visible)
+                    {
+                        AddAsset(assetValues);
+                    }
+                }
+
+                return assetLayer;
+
+                void AddAsset((int col, int row, int width, int height, bool covered) assetValues)
+                {
+                    for (int r = 0; r < assetValues.height; r++)
+                    {
+                        if (r + assetValues.row >= 0)
+                        {
+                            for (int c = 0; c < assetValues.width; c++)
+                            {
+                                if (assetValues.covered)
+                                {
+                                    if (r + assetValues.row > 11)
+                                    {
+                                        assetLayer[r + assetValues.row, c + assetValues.col] = -1;
+                                    }
+                                    else if (r + assetValues.row == 11)
+                                    {
+                                        if (c + assetValues.col < 6 || c + assetValues.col > 17)
+                                        {
+                                            assetLayer[r + assetValues.row, c + assetValues.col] = asset[r, c];
+                                        }
+                                        else
+                                        {
+                                            assetLayer[r + assetValues.row, c + assetValues.col] = -1;
+                                        }
+                                    }
+                                    else
+                                    {
+                                        assetLayer[r + assetValues.row, c + assetValues.col] = asset[r, c];
+                                    }
+                                }
+                                else
+                                {
+                                    assetLayer[r + assetValues.row, c + assetValues.col] = asset[r, c];
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            void AddAssetLayer(int[,] assetLayer)
+            {
+                for (int r = 0; r < 24; r++)
+                {
+                    for (int c = 0; c < 24; c++)
+                    {
+                        if (assetLayer[r, c] != -1)
+                        {
+                            render[r, c] = assetLayer[r, c];
+                        }
+                    }
                 }
             }
         }
