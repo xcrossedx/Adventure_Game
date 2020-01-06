@@ -167,11 +167,29 @@ namespace Onyx
                         if (col > 132 && col < 155)
                         {
                             assetValues.covered = true;
-                            assetValues.row = (11 - (assetValues.height + 2)) + ((155 - col) / 2) + ((11 - ((155 - col) / 2)) / 2);
+                            assetValues.row = (11 - (assetValues.height + 2)) + ((155 - col) / 2);
                         }
                         else if (col >= 155)
                         {
-                            assetValues.row = (16 - (assetValues.height + 2)) - ((165 - col) / 2) + ((16 - ((165 - col) / 2)) / 2);
+                            assetValues.row = (16 - (assetValues.height + 2)) - ((165 - col) / 2);
+                        }
+
+                        assetValues.row += (11 - assetValues.row) / 4;
+
+                        AddAsset(assetValues);
+
+                        asset = Keep.exteriorForeground.Clone() as int[,];
+
+                        assetValues.height = 12;
+
+                        if (col > 132 && col < 155)
+                        {
+                            assetValues.covered = true;
+                            assetValues.row = (11 - (assetValues.height - 1)) + ((155 - col) / 2);
+                        }
+                        else if (col >= 155)
+                        {
+                            assetValues.row = (16 - (assetValues.height - 1)) - ((165 - col) / 2);
                         }
                     }
 
@@ -191,31 +209,34 @@ namespace Onyx
                         {
                             for (int c = 0; c < assetValues.width; c++)
                             {
-                                if (assetValues.covered)
+                                if (asset[r, c] != -1)
                                 {
-                                    if (r + assetValues.row > 11)
+                                    if (assetValues.covered)
                                     {
-                                        assetLayer[r + assetValues.row, c + assetValues.col] = -1;
-                                    }
-                                    else if (r + assetValues.row == 11)
-                                    {
-                                        if (c + assetValues.col < 6 || c + assetValues.col > 17)
+                                        if (r + assetValues.row > 11)
                                         {
-                                            assetLayer[r + assetValues.row, c + assetValues.col] = asset[r, c];
+                                            assetLayer[r + assetValues.row, c + assetValues.col] = -1;
+                                        }
+                                        else if (r + assetValues.row == 11)
+                                        {
+                                            if (c + assetValues.col < 6 || c + assetValues.col > 17)
+                                            {
+                                                assetLayer[r + assetValues.row, c + assetValues.col] = asset[r, c];
+                                            }
+                                            else
+                                            {
+                                                assetLayer[r + assetValues.row, c + assetValues.col] = -1;
+                                            }
                                         }
                                         else
                                         {
-                                            assetLayer[r + assetValues.row, c + assetValues.col] = -1;
+                                            assetLayer[r + assetValues.row, c + assetValues.col] = asset[r, c];
                                         }
                                     }
                                     else
                                     {
                                         assetLayer[r + assetValues.row, c + assetValues.col] = asset[r, c];
                                     }
-                                }
-                                else
-                                {
-                                    assetLayer[r + assetValues.row, c + assetValues.col] = asset[r, c];
                                 }
                             }
                         }
