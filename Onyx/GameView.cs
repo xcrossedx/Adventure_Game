@@ -143,18 +143,18 @@ namespace Onyx
                         assetValues.width = 24;
                         assetValues.height = 13;
 
-                        if (row < 60 && row > 35)
+                        if (row < 60 && row >= 35)
                         {
                             assetValues.covered = true;
                             assetValues.row = (11 - (assetValues.height - 1)) + ((row - 35) / 2);
                         }
-                        else if (row <= 35)
+                        else if (row < 35)
                         {
-                            assetValues.row = (16 - (assetValues.height - 1)) - ((row - 25) / 2);
+                            assetValues.row = (16 - (assetValues.height - 1)) - ((row - 24) / 2);
                         }
                     }
 
-                    if (row == 75 && col > 132 && dir == 1)
+                    if (row == 75 && col > 131 && dir == 1)
                     {
                         visible = true;
 
@@ -164,14 +164,14 @@ namespace Onyx
                         assetValues.width = 14;
                         assetValues.height = 9;
 
-                        if (col > 132 && col < 155)
+                        if (col > 131 && col <= 155)
                         {
                             assetValues.covered = true;
                             assetValues.row = (11 - (assetValues.height + 2)) + ((155 - col) / 2);
                         }
-                        else if (col >= 155)
+                        else if (col > 155)
                         {
-                            assetValues.row = (16 - (assetValues.height + 2)) - ((165 - col) / 2);
+                            assetValues.row = (16 - (assetValues.height + 2)) - ((166 - col) / 2);
                         }
 
                         assetValues.row += (11 - assetValues.row) / 4;
@@ -182,14 +182,14 @@ namespace Onyx
 
                         assetValues.height = 12;
 
-                        if (col > 132 && col < 155)
+                        if (col > 131 && col <= 155)
                         {
                             assetValues.covered = true;
                             assetValues.row = (11 - (assetValues.height - 1)) + ((155 - col) / 2);
                         }
-                        else if (col >= 155)
+                        else if (col > 155)
                         {
-                            assetValues.row = (16 - (assetValues.height - 1)) - ((165 - col) / 2);
+                            assetValues.row = (16 - (assetValues.height - 1)) - ((166 - col) / 2);
                         }
                     }
 
