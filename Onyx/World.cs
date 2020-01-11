@@ -40,14 +40,15 @@ namespace Onyx
         private static int[,] largeWorldMap = new int[250, 200];
 
         //Directions 0 = north, 1 = east, 2 = south, 3 = west
-        public static (int row, int col, int direction) finePlayerLocation = (25, 115, 0);
-        public static (int row, int col, int direction) playerLocation = (2, 11, 0);
+        public static (int row, int col, int direction) finePlayerLocation = (0, 0, 0);
 
         //0 = direction unavailable, 1 = direction available, 2 = direction leads to new location
         private static int[] directions = { 2, 0, 1, 0 };
 
         public static void Initialize()
         {
+            finePlayerLocation = ((Player.globalLocation.row * 10) + 5, (Player.globalLocation.col * 10) + 5, Player.globalLocation.direction);
+
             Random rng = new Random();
 
             for (int r = 0; r < 25; r++)
@@ -92,7 +93,7 @@ namespace Onyx
         {
             int[,] worldView = new int[13, 24];
 
-            int d = playerLocation.direction;
+            int d = Player.globalLocation.direction;
             int pRow = finePlayerLocation.row;
             int pCol = finePlayerLocation.col;
 
@@ -192,92 +193,116 @@ namespace Onyx
         {
             GetDirections();
 
-            int d = playerLocation.direction;
+            int d = Player.globalLocation.direction;
 
-            if (direction == 0 && directions[playerLocation.direction] == 1)
+            if (direction == 0 && directions[Player.globalLocation.direction] == 1)
             {
                 if (d == 0)
                 {
-                    playerLocation.row -= 1;
+                    Player.globalLocation.row -= 1;
                 }
                 else if (d == 1)
                 {
-                    playerLocation.col += 1;
+                    Player.globalLocation.col += 1;
                 }
                 else if (d == 2)
                 {
-                    playerLocation.row += 1;
+                    Player.globalLocation.row += 1;
                 }
                 else
                 {
-                    playerLocation.col -= 1;
+                    Player.globalLocation.col -= 1;
                 }
             }
-            if (direction == 2 && directions[(playerLocation.direction + 2) % 4] == 1)
+            if (direction == 2 && directions[(Player.globalLocation.direction + 2) % 4] == 1)
             {
                 if (d == 0)
                 {
-                    playerLocation.row += 1;
+                    Player.globalLocation.row += 1;
                 }
                 else if (d == 1)
                 {
-                    playerLocation.col -= 1;
+                    Player.globalLocation.col -= 1;
                 }
                 else if (d == 2)
                 {
-                    playerLocation.row -= 1;
+                    Player.globalLocation.row -= 1;
                 }
                 else
                 {
-                    playerLocation.col += 1;
+                    Player.globalLocation.col += 1;
                 }
             }
             if (direction == 1)
             {
-                playerLocation.direction = (d + 1) % 4;
+                Player.globalLocation.direction = (d + 1) % 4;
 
-                if (directions[playerLocation.direction] == 0)
+                if (directions[Player.globalLocation.direction] == 0)
                 {
-                    playerLocation.direction = (playerLocation.direction + 1) % 4;
+                    Player.globalLocation.direction = (Player.globalLocation.direction + 1) % 4;
                 }
 
-                finePlayerLocation.direction = playerLocation.direction;
+                finePlayerLocation.direction = Player.globalLocation.direction;
             }
             if (direction == 3)
             {
                 if (d != 0)
                 {
-                    playerLocation.direction = d - 1;
+                    Player.globalLocation.direction = d - 1;
                 }
                 else
                 {
-                    playerLocation.direction = 3;
+                    Player.globalLocation.direction = 3;
                 }
 
-                if (directions[playerLocation.direction] == 0)
+                if (directions[Player.globalLocation.direction] == 0)
                 {
-                    if (playerLocation.direction != 0)
+                    if (Player.globalLocation.direction != 0)
                     {
-                        playerLocation.direction = playerLocation.direction - 1;
+                        Player.globalLocation.direction = Player.globalLocation.direction - 1;
                     }
                     else
                     {
-                        playerLocation.direction = 3;
+                        Player.globalLocation.direction = 3;
                     }
                 }
 
-                finePlayerLocation.direction = playerLocation.direction;
+                finePlayerLocation.direction = Player.globalLocation.direction;
+            }
+
+            int rowDif = ((Player.globalLocation.row * 10) + 5) - finePlayerLocation.row;
+            int colDif = ((Player.globalLocation.col * 10) + 5) - finePlayerLocation.col;
+
+            if (rowDif != 0)
+            {
+                for (int i = 0; i < Math.Abs(rowDif); i++)
+                {
+                    finePlayerLocation.row += (rowDif) / 10;
+                    Screen.Draw(0);
+                }
+            }
+            else if (colDif != 0)
+            {
+                for (int i = 0; i < Math.Abs(colDif); i++)
+                {
+                    finePlayerLocation.col += (colDif) / 10;
+                    Screen.Draw(0);
+                }
+            }
+            else
+            {
+                Screen.Draw(0);
             }
         }
 
         private static void GetDirections()
         {
             //Setting the value of north
-            if ((playerLocation.col == 2 && (playerLocation.row > 5 && playerLocation.row < 23)) || (playerLocation.col == 11 && (playerLocation.row > 2 && playerLocation.row < 22)))
+            if ((Player.globalLocation.col == 2 && (Player.globalLocation.row > 5 && Player.globalLocation.row < 23)) || (Player.globalLocation.col == 11 && (Player.globalLocation.row > 2 && Player.globalLocation.row < 22)))
             {
                 directions[0] = 1;
             }
-            else if ((playerLocation.col == 2 && playerLocation.row == 5) || (playerLocation.col == 11 && playerLocation.row == 2))
+            else if ((Player.globalLocation.col == 2 && Player.globalLocation.row == 5) || (Player.globalLocation.col == 11 && Player.globalLocation.row == 2))
             {
                 directions[0] = 2;
             }
@@ -287,11 +312,11 @@ namespace Onyx
             }
 
             //Setting the value of east
-            if ((playerLocation.row == 7 && (playerLocation.col > 10 && playerLocation.col < 16)) || (playerLocation.row == 14 && (playerLocation.col > 1 && playerLocation.col < 17)))
+            if ((Player.globalLocation.row == 7 && (Player.globalLocation.col > 10 && Player.globalLocation.col < 16)) || (Player.globalLocation.row == 14 && (Player.globalLocation.col > 1 && Player.globalLocation.col < 17)))
             {
                 directions[1] = 1;
             }
-            else if ((playerLocation.row == 7 && playerLocation.col == 16) || (playerLocation.row == 14 && playerLocation.col == 17))
+            else if ((Player.globalLocation.row == 7 && Player.globalLocation.col == 16) || (Player.globalLocation.row == 14 && Player.globalLocation.col == 17))
             {
                 directions[1] = 2;
             }
@@ -301,11 +326,11 @@ namespace Onyx
             }
 
             //Setting the value of south
-            if ((playerLocation.col == 2 && (playerLocation.row > 4 && playerLocation.row < 22)) || (playerLocation.col == 11 && (playerLocation.row > 1 && playerLocation.row < 21)))
+            if ((Player.globalLocation.col == 2 && (Player.globalLocation.row > 4 && Player.globalLocation.row < 22)) || (Player.globalLocation.col == 11 && (Player.globalLocation.row > 1 && Player.globalLocation.row < 21)))
             {
                 directions[2] = 1;
             }
-            else if ((playerLocation.col == 2 && playerLocation.row == 22) || (playerLocation.col == 11 && playerLocation.col == 21))
+            else if ((Player.globalLocation.col == 2 && Player.globalLocation.row == 22) || (Player.globalLocation.col == 11 && Player.globalLocation.col == 21))
             {
                 directions[2] = 2;
             }
@@ -315,11 +340,11 @@ namespace Onyx
             }
 
             //Setting the value of west
-            if ((playerLocation.row == 7 && (playerLocation.col > 11 && playerLocation.col < 17)) || (playerLocation.row == 14 && (playerLocation.col > 2 && playerLocation.col < 18)))
+            if ((Player.globalLocation.row == 7 && (Player.globalLocation.col > 11 && Player.globalLocation.col < 17)) || (Player.globalLocation.row == 14 && (Player.globalLocation.col > 2 && Player.globalLocation.col < 18)))
             {
                 directions[3] = 1;
             }
-            else if (playerLocation.row == 14 && playerLocation.col == 2)
+            else if (Player.globalLocation.row == 14 && Player.globalLocation.col == 2)
             {
                 directions[3] = 2;
             }

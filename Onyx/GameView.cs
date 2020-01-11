@@ -21,30 +21,6 @@ namespace Onyx
             if (currentGameView == 0)
             {
                 World.Navigate(direction);
-
-                int rowDif = ((World.playerLocation.row * 10) + 5) - World.finePlayerLocation.row;
-                int colDif = ((World.playerLocation.col * 10) + 5) - World.finePlayerLocation.col;
-
-                if (rowDif != 0)
-                {
-                    for (int i = 0; i < Math.Abs(rowDif); i++)
-                    {
-                        World.finePlayerLocation.row += (rowDif) / 10;
-                        Screen.Draw(0);
-                    }
-                }
-                else if (colDif != 0)
-                {
-                    for (int i = 0; i < Math.Abs(colDif); i++)
-                    {
-                        World.finePlayerLocation.col += (colDif) / 10;
-                        Screen.Draw(0);
-                    }
-                }
-                else
-                {
-                    Screen.Draw(0);
-                }
             }
         }
 
@@ -102,11 +78,43 @@ namespace Onyx
 
                 AddAssetLayer(CreateAssetLayer());
             }
+            //If currently in town
+            else if (currentGameView == 1)
+            {
+
+            }
+            //If currently in the ruined keep
+            else if (currentGameView == 2)
+            {
+
+            }
+            //If currently in the ancestral tomb
+            else if (currentGameView == 3)
+            {
+
+            }
+            //If currently in the cursed mine
+            else if (currentGameView == 4)
+            {
+
+            }
+            //If currently in the necromancer's lair
+            else if (currentGameView == 5)
+            {
+
+            }
+            //If currently in the forgotten cave
+            else if (currentGameView == 6)
+            {
+
+            }
 
             return render;
 
+            //Creates a layer containing all visible assets to be layered over the current game view
             int[,] CreateAssetLayer()
             {
+                //Initializing asset information
                 int row;
                 int col;
                 int dir;
@@ -123,8 +131,10 @@ namespace Onyx
                     }
                 }
 
+                //Detecting and placing visible assets in the world map
                 if (currentGameView == 0)
                 {
+                    //aquiring specific asset information
                     row = World.finePlayerLocation.row;
                     col = World.finePlayerLocation.col;
                     dir = World.finePlayerLocation.direction;
@@ -133,7 +143,8 @@ namespace Onyx
 
                     bool visible = false;
 
-                    if (col == 115 && row < 60 && dir == 0)
+                    //Checking for the town
+                    if (col == 115 && row < 62 && dir == 0)
                     {
                         visible = true;
 
@@ -143,56 +154,60 @@ namespace Onyx
                         assetValues.width = 24;
                         assetValues.height = 13;
 
-                        if (row < 60 && row >= 35)
+                        if (row < 62 && row > 35)
                         {
                             assetValues.covered = true;
-                            assetValues.row = (11 - (assetValues.height - 1)) + ((row - 35) / 2);
+                            assetValues.row = (11 - (assetValues.height - 1)) + ((row - 34) / 2) - 1;
                         }
-                        else if (row < 35)
+                        else if (row <= 35)
                         {
-                            assetValues.row = (16 - (assetValues.height - 1)) - ((row - 24) / 2);
+                            assetValues.row = (16 - (assetValues.height - 1)) - ((row - 25) / 2);
                         }
                     }
 
-                    if (row == 75 && col > 131 && dir == 1)
+                    //Checking for the ruined keep
+                    if (row == 75 && col > 129 && dir == 1)
                     {
                         visible = true;
 
+                        //Placing the background paralax layer
                         asset = Keep.exteriorBackground.Clone() as int[,];
 
                         assetValues.col = 5;
                         assetValues.width = 14;
                         assetValues.height = 9;
 
-                        if (col > 131 && col <= 155)
+                        if (col > 129 && col < 155)
                         {
                             assetValues.covered = true;
-                            assetValues.row = (11 - (assetValues.height + 2)) + ((155 - col) / 2);
+                            assetValues.row = (11 - (assetValues.height + 2)) + ((156 - col) / 2) - 1;
                         }
-                        else if (col > 155)
+                        else if (col >= 155)
                         {
-                            assetValues.row = (16 - (assetValues.height + 2)) - ((166 - col) / 2);
+                            assetValues.row = (16 - (assetValues.height + 2)) - ((165 - col) / 2);
                         }
 
                         assetValues.row += (11 - assetValues.row) / 4;
 
                         AddAsset(assetValues);
 
+                        //Placing the foreGround layer
                         asset = Keep.exteriorForeground.Clone() as int[,];
 
                         assetValues.height = 12;
 
-                        if (col > 131 && col <= 155)
+                        if (col > 129 && col < 155)
                         {
                             assetValues.covered = true;
-                            assetValues.row = (11 - (assetValues.height - 1)) + ((155 - col) / 2);
+                            assetValues.row = (11 - (assetValues.height - 1)) + ((156 - col) / 2) - 1;
                         }
-                        else if (col > 155)
+                        else if (col >= 155)
                         {
-                            assetValues.row = (16 - (assetValues.height - 1)) - ((166 - col) / 2);
+                            assetValues.row = (16 - (assetValues.height - 1)) - ((165 - col) / 2);
                         }
                     }
 
+                    //Adding visible assets
                     if (visible)
                     {
                         AddAsset(assetValues);
@@ -201,6 +216,7 @@ namespace Onyx
 
                 return assetLayer;
 
+                //Addes an asset to the asset layer with the given specifications
                 void AddAsset((int col, int row, int width, int height, bool covered) assetValues)
                 {
                     for (int r = 0; r < assetValues.height; r++)
@@ -244,6 +260,7 @@ namespace Onyx
                 }
             }
 
+            //Adds the asset layer the the existing render
             void AddAssetLayer(int[,] assetLayer)
             {
                 for (int r = 0; r < 24; r++)

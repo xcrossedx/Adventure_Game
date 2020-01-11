@@ -8,7 +8,8 @@ namespace Onyx
 {
     static class Player
     {
-
+        public static (int row, int col, int direction) globalLocation = (7, 16, 0);
+        public static (int row, int col, int direction) localLocation = (0, 0, 0);
 
         public static List<Item> hotBar = new List<Item>();
         public static List<Item> equipmentBar = new List<Item>();

@@ -50,7 +50,6 @@
     <Compile Include="Game.cs" />
     <Compile Include="GameView.cs" />
     <Compile Include="Inventory.cs" />
-    <Compile Include="InventoryView.cs" />
     <Compile Include="Item.cs" />
     <Compile Include="Keep.cs" />
     <Compile Include="Lair.cs" />

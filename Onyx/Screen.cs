@@ -120,6 +120,9 @@ namespace Onyx
 
         //Previous content for comparison
         private static List<List<int>> oldGameView = new List<List<int>>();
+        private static List<Item> oldHotBar = new List<Item>();
+        private static List<Item> oldEquipmentBar = new List<Item>();
+        private static List<List<char>> oldTextView = new List<List<char>>();
 
         //Draws content within the given region
         private static void DrawContent(int region)
@@ -143,17 +146,71 @@ namespace Onyx
             //Consumables
             else if (region == 1)
             {
-                InventoryView.RenderHotBar();
+                Player.GenerateHotBar();
+
+                for (int i = 0; i < 10; i++)
+                {
+                    if ((i + 1) * 5 < regions[1].height)
+                    {
+                        if (oldHotBar.Count() > i)
+                        {
+                            if (Player.hotBar[i] != oldHotBar[i])
+                            {
+                                DrawItem(contentRegion.row + (5 * i), contentRegion.col, Player.hotBar[i]);
+                            }
+                        }
+                        else
+                        {
+                            DrawItem(contentRegion.row + (5 * i), contentRegion.col, Player.hotBar[i]);
+                        }
+                    }
+                }
             }
             //Equipped items
             else if (region == 2)
             {
-                InventoryView.RenderEquipmentBar();
+                Player.GenerateEquipmentBar();
+
+                for (int i = 0; i < 5; i++)
+                {
+                    if ((i + 1) * 5 < regions[2].height)
+                    {
+                        if (oldEquipmentBar.Count() > i)
+                        {
+                            if (Player.equipmentBar[i] != oldEquipmentBar[i])
+                            {
+                                DrawItem(contentRegion.row + (5 * i), contentRegion.col, Player.equipmentBar[i]);
+                            }
+                        }
+                        else
+                        {
+                            DrawItem(contentRegion.row + (5 * i), contentRegion.col, Player.equipmentBar[i]);
+                        }
+                    }
+                }
             }
             //Text input/output
             else if (region == 3)
             {
+                List<List<char>> render = TextView.Render(contentRegion.width, contentRegion.height);
 
+                for (int r = 0; r < contentRegion.height; r++)
+                {
+                    for (int c = 0; c < contentRegion.width; c++)
+                    {
+                        if (oldTextView.Count() == render.Count() && oldTextView[0].Count() == render[0].Count())
+                        {
+                            if (render[r][c] != oldTextView[r][c])
+                            {
+                                DrawChar(contentRegion.row + r, contentRegion.col + c, render[r][c]);
+                            }
+                        }
+                        else
+                        {
+                            DrawChar(contentRegion.row + r, contentRegion.col + c, render[r][c]);
+                        }
+                    }
+                }
             }
 
             //Draws individual "pixels" for the game view region
@@ -175,6 +232,18 @@ namespace Onyx
                 }
 
                 Console.BackgroundColor = ConsoleColor.Black;
+            }
+
+            //Draws an individual item in the given location
+            void DrawItem(int row, int col, Item item)
+            {
+
+            }
+
+            //Draws an individual character in the given position of the text region
+            void DrawChar(int row, int col, char ch)
+            {
+
             }
         }
 
@@ -270,6 +339,9 @@ namespace Onyx
                 if (Game.playing)
                 {
                     oldGameView = new List<List<int>>();
+                    oldHotBar = new List<Item>();
+                    oldEquipmentBar = new List<Item>();
+                    oldTextView = new List<List<char>>();
                     Draw();
                 }
                 else
